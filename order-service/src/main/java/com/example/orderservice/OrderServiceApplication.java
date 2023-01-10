@@ -16,8 +16,4 @@ public class OrderServiceApplication {
 		SpringApplication.run(OrderServiceApplication.class, args);
 	}
 
-	@GetMapping("/info")
-	public String info() {
-		return "Order 서비스 동작합니다";
-	}
 }

@@ -12,15 +12,10 @@ import javax.ws.rs.Path;
 
 @SpringBootApplication
 @EnableEurekaClient
-@RestController
 public class UserServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
 	}
 
-	@GetMapping("/info")
-	public String info() {
-		return "User 서비스 동작합니다";
-	}
 }
