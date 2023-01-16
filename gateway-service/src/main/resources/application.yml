@@ -19,6 +19,8 @@ spring:
           uri : lb://USER-SERVICE
           predicates:
             - Path=/user/**
+#          filters:
+#            - CustomAuthFilter
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
