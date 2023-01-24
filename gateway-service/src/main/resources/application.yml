@@ -21,7 +21,3 @@ spring:
             - Path=/user/**
 #          filters:
 #            - CustomAuthFilter
-        - id: order-service
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/order/**
