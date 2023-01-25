@@ -1,5 +1,10 @@
 package com.example.gatewayservice.config;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.context.annotation.Configuration;
@@ -10,50 +15,57 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.security.Key;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFilter.Config> {
 
-    public CustomAuthFilter() {
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    public CustomAuthFilter(){
         super(Config.class);
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            // reactive request !
-            ServerHttpRequest request = exchange.getRequest(); // Pre Filter
+            ServerHttpRequest request = exchange.getRequest();
 
-            // Request Header 에 token 이 존재하지 않을 때때
-            if (!request.getHeaders().containsKey("token")) {
-                return handleUnAuthorized(exchange); // 401 Error
+            // Request Header 에 token 이 존재하지 않을때
+            if(!request.getHeaders().containsKey("Authorization")){
+                return handleUnAuthorize(exchange);
             }
 
-            // Request Header 에서 token 문자열 받아오기
-            List<String> token = request.getHeaders().get("token");
-            String tokenString = Objects.requireNonNull(token).get(0);
+            String jwt = request.getHeaders().get("Authorization").get(0).substring(7);
 
-            // 토근 검증
+            //header에 토큰 정보 가져온다.
+            byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
+            Key key = Keys.hmacShaKeyFor(keyBytes);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).
 
-            if(!tokenString.equals("A.B.C")){
-                return handleUnAuthorized(exchange); // 토큰 일치하지 않을 때
-            }
 
-            return chain.filter(exchange); //토큰이 일치할 때
+
+
+            //옳게된 토큰이라면 header에 정보를 추가해줌
+
+            return chain.filter(exchange);
+
         });
+
     }
 
-    private Mono<Void> handleUnAuthorized(ServerWebExchange exchange) {
+    private Mono<Void> handleUnAuthorize(ServerWebExchange exchange){
         ServerHttpResponse response = exchange.getResponse();
 
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
     }
 
-    public static class Config {
+
+    public static class Config{
 
     }
-
 }
