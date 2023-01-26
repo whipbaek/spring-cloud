@@ -18,9 +18,16 @@ spring:
         - id: user-service
           uri : lb://USER-SERVICE
           predicates:
-            - Path=/user/**
-#          filters:
-#            - CustomAuthFilter
+            - Path=/user/api/**
+          filters:
+            - CustomAuthFilter
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/auth/**
+#        - id: community-server
+#          uri: lb://COMMUNITY-SERVICE
+#            - Path=/community/**
 
 jwt:
   secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWppd29vbi1zcHJpbmctYm9vdC1zZWN1cml0eS1qd3QtdHV0b3JpYWwK
