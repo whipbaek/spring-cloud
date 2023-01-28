@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 eureka:
   client:
@@ -11,6 +11,8 @@ eureka:
 spring:
   application:
     name: gateway-service
+  main:
+    web-application-type: reactive
 
   cloud:
     gateway:
